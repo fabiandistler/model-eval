@@ -58,9 +58,21 @@ parse_model_configs <- function(yaml_path) {
 #'
 #' @param model_configs List of model configs from parse_model_configs()
 #' @param results_dir Directory containing .rds files
+#' @param selected_ids Optional character vector of model_ids to restrict to
 #' @return Character vector of model_ids that have NOT been evaluated
-find_unevaluated_models <- function(model_configs, results_dir) {
+find_unevaluated_models <- function(model_configs, results_dir, selected_ids = NULL) {
   all_model_ids <- names(model_configs)
+
+  # Restrict to selected models if specified
+  if (!is.null(selected_ids)) {
+    invalid <- setdiff(selected_ids, all_model_ids)
+    if (length(invalid) > 0) {
+      stop(glue(
+        "Selected model_id(s) not found in YAML: {paste(invalid, collapse = ', ')}"
+      ))
+    }
+    all_model_ids <- intersect(selected_ids, all_model_ids)
+  }
 
   # Create results_dir if it doesn't exist
   if (!dir_exists(results_dir)) {
@@ -96,7 +108,7 @@ build_chat_args <- function(config) {
         "Environment variable '{config$api_key_env}' not set for model '{config$name}'"
       ))
     }
-    args$api_key <- api_key
+    args$credentials <- function() api_key
   }
 
   # Add api_args if specified in YAML
@@ -134,9 +146,12 @@ run_single_eval <- function(
   result <- tryCatch(
     {
       # Build chat arguments
+      message("[1/4] Building chat arguments...")
       chat_args <- build_chat_args(config)
+      message("[1/4] Chat arguments built successfully.")
 
       # Call model_eval with dynamic arguments
+      message("[2/4] Calling model_eval...")
       do.call(
         model_eval_fn,
         c(
@@ -156,6 +171,15 @@ run_single_eval <- function(
     error = function(e) {
       message(glue("✗ FAILED: {config$name}"))
       message(glue("  Error: {e$message}"))
+      # Print traceback if available for deeper diagnostics
+      trace <- sys.calls()
+      if (length(trace) > 0) {
+        message("  Traceback:")
+        calls <- as.character(trace)
+        for (call in tail(calls, 20)) {
+          message(glue("    {call}"))
+        }
+      }
       FALSE
     }
   )
