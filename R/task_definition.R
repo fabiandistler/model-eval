@@ -138,6 +138,7 @@ model_eval <- function(
   extra_args <- list(...)
   base_url <- extra_args$base_url
 
+  message("[3/4] Creating solver chat for model: ", model)
   if (!is.null(base_url) && grepl("openrouter", base_url, ignore.case = TRUE)) {
     chat <- ellmer::chat_openai_compatible(
       base_url = base_url,
@@ -148,9 +149,25 @@ model_eval <- function(
   } else {
     chat <- ellmer::chat(name = model, ...)
   }
+  message("[3/4] Solver chat created successfully.")
 
+  message("[3.5/4] Creating ARE task...")
   are_task <- create_are_task(scorer_chat)
-  are_task$eval(solver_chat = chat)
+  message("[3.5/4] ARE task created successfully.")
+
+  message("[4/4] Running task evaluation (may take a while)...")
+  tryCatch(
+    {
+      are_task$eval(solver_chat = chat)
+      message("[4/4] Task evaluation completed.")
+    },
+    error = function(e) {
+      message(glue::glue("[4/4] Task evaluation FAILED: {e$message}"))
+      # Re-raise so run_single_eval can capture it
+      stop(e)
+    }
+  )
 
   readr::write_rds(are_task, file = model_path)
+  message("Results saved to: ", model_path)
 }
