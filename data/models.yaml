@@ -1,24 +1,12 @@
 models:
   # OpenRouter Models (set OPENROUTER_API_KEY environment variable)
 
-  - name: GPT-4o Mini (OpenRouter)
-    model_id: or_gpt4o_mini
+  - name: Minimax M2.5 (OpenRouter)
+    model_id: minimax_m2_5
     provider: OpenRouter
     release_date: 2025-01-01
-    input_price: 0.3
-    output_price: 1.2
-    api_model_id: openai/gpt-4o-mini-2024-07-18
+    input_price: 0.0
+    output_price: 0.0
+    api_model_id: minimax/minimax-m2.5:free
     base_url: https://openrouter.ai/api/v1
     api_key_env: OPENROUTER_API_KEY
-
-  - name: Llama 3.1 70B (OpenRouter)
-    model_id: or_llama_3_1_70b
-    provider: OpenRouter
-    release_date: 2025-01-01
-    input_price: 0.8
-    output_price: 0.8
-    api_model_id: meta-llama/llama-3.1-70b-instruct
-    base_url: https://openrouter.ai/api/v1
-    api_key_env: OPENROUTER_API_KEY
-    
-

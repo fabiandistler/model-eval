@@ -96,7 +96,7 @@ build_chat_args <- function(config) {
         "Environment variable '{config$api_key_env}' not set for model '{config$name}'"
       ))
     }
-    args$api_key <- api_key
+    args$credentials <- function() api_key
   }
 
   # Add api_args if specified in YAML
