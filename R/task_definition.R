@@ -135,12 +135,10 @@ model_eval <- function(
     return(invisible(NULL))
   }
 
-  # Extract base_url from ... if provided, otherwise default to OpenAI
   extra_args <- list(...)
   base_url <- extra_args$base_url
 
   if (!is.null(base_url) && grepl("openrouter", base_url, ignore.case = TRUE)) {
-    # Use chat_openai_compatible for OpenRouter
     chat <- ellmer::chat_openai_compatible(
       base_url = base_url,
       model = model,
@@ -148,7 +146,6 @@ model_eval <- function(
       api_args = extra_args$api_args %||% list()
     )
   } else {
-    # Fall back to ellmer::chat for other providers
     chat <- ellmer::chat(name = model, ...)
   }
 
