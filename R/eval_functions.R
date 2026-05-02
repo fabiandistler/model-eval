@@ -17,7 +17,6 @@ parse_model_configs <- function(yaml_path) {
 
   models <- yaml_data$models %>%
     map(function(model) {
-      # Validate required fields
       required <- c(
         "name",
         "model_id",
@@ -34,22 +33,15 @@ parse_model_configs <- function(yaml_path) {
         ))
       }
 
-      # Build config with defaults for optional fields
-      config <- list(
+      list(
         name = model$name,
         model_id = model$model_id,
         api_model_id = model$api_model_id,
         provider = model$provider,
-        thinking = model$thinking %||% FALSE,
-        thinking_budget = model$thinking_budget %||% 2000,
-        base_url = model$base_url %||% NULL,
-        api_key_env = model$api_key_env %||% NULL
+        reasoning_effort = model$reasoning_effort %||% NULL
       )
-
-      config
     })
 
-  # Name the list by model_id for easy lookup
   names(models) <- map_chr(models, "model_id")
   models
 }
@@ -76,35 +68,70 @@ find_unevaluated_models <- function(model_configs, results_dir) {
   unevaluated
 }
 
-#' Build ellmer chat() arguments from model config
+#' Build chat_openrouter() api_args from model config
+#'
+#' Always sets `usage = list(include = TRUE)` so OpenRouter returns the
+#' authoritative per-request cost. Adds `reasoning = list(effort = ...)`
+#' when configured.
 #'
 #' @param config Model config from parse_model_configs()
-#' @return Named list of arguments to pass to chat()
-build_chat_args <- function(config) {
-  args <- list()
+#' @return Named list with `api_args` element ready to pass to chat_openrouter()
+build_openrouter_args <- function(config) {
+  api_args <- list(usage = list(include = TRUE))
 
-  # Add base_url if specified
-  if (!is.null(config$base_url)) {
-    args$base_url <- config$base_url
+  if (!is.null(config$reasoning_effort)) {
+    api_args$reasoning <- list(effort = config$reasoning_effort)
   }
 
-  # Add custom API key if specified
-  if (!is.null(config$api_key_env)) {
-    api_key <- Sys.getenv(config$api_key_env)
-    if (api_key == "") {
-      stop(glue(
-        "Environment variable '{config$api_key_env}' not set for model '{config$name}'"
-      ))
+  list(api_args = api_args)
+}
+
+# ============================================================================
+# Retry with exponential backoff
+# ============================================================================
+
+# Status codes worth retrying — transient server/rate-limit errors only.
+# 4xx other than 408/429 are caller errors (bad model id, auth) and must fail fast.
+.is_transient_error <- function(cnd) {
+  resp <- cnd$resp
+  if (is.null(resp)) {
+    # Network-level failure (DNS, timeout, connection reset) — retry.
+    return(TRUE)
+  }
+  status <- tryCatch(httr2::resp_status(resp), error = function(e) NA_integer_)
+  isTRUE(status %in% c(408, 429) | (status >= 500 & status < 600))
+}
+
+#' Run an expression with exponential backoff on transient errors
+#'
+#' @param expr Quoted expression to evaluate
+#' @param max_tries Maximum attempts (default 5)
+#' @param base_delay Initial backoff in seconds (default 1)
+#' @return The value of expr
+with_retry <- function(expr, max_tries = 5, base_delay = 1) {
+  expr <- substitute(expr)
+  env <- parent.frame()
+
+  for (attempt in seq_len(max_tries)) {
+    result <- tryCatch(
+      list(ok = TRUE, value = eval(expr, env)),
+      error = function(e) list(ok = FALSE, cnd = e)
+    )
+
+    if (result$ok) {
+      return(result$value)
     }
-    args$api_key <- api_key
-  }
 
-  # Add api_args if specified in YAML
-  if (!is.null(config$api_args)) {
-    args$api_args <- config$api_args
-  }
+    if (!.is_transient_error(result$cnd) || attempt == max_tries) {
+      stop(result$cnd)
+    }
 
-  args
+    delay <- base_delay * (2^(attempt - 1))
+    message(glue(
+      "  retry {attempt}/{max_tries - 1} in {delay}s ({conditionMessage(result$cnd)})"
+    ))
+    Sys.sleep(delay)
+  }
 }
 
 # ============================================================================
@@ -133,20 +160,15 @@ run_single_eval <- function(
 
   result <- tryCatch(
     {
-      # Build chat arguments
-      chat_args <- build_chat_args(config)
+      or_args <- build_openrouter_args(config)
 
-      # Call model_eval with dynamic arguments
-      do.call(
-        model_eval_fn,
-        c(
-          list(
-            model = config$api_model_id,
-            filename = model_id,
-            scorer_chat = scorer_chat,
-            overwrite = FALSE # Don't overwrite existing results
-          ),
-          chat_args
+      with_retry(
+        model_eval_fn(
+          model = config$api_model_id,
+          filename = model_id,
+          scorer_chat = scorer_chat,
+          overwrite = FALSE,
+          api_args = or_args$api_args
         )
       )
 
