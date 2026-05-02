@@ -16,7 +16,7 @@ source(here::here("R/eval_functions.R"))
 YAML_PATH <- here::here("data/models.yaml")
 RESULTS_DIR <- here::here("results_rds")
 LOG_DIR <- here::here("logs")
-SCORER_MODEL <- "minimax/minimax-m2.5:free"
+SCORER_MODEL <- "minimax/minimax-m2.7"
 
 # Set up logging
 vitals::vitals_log_dir_set(LOG_DIR)

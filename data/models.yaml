@@ -1,12 +1,12 @@
 models:
   # OpenRouter Models (set OPENROUTER_API_KEY environment variable)
 
-  - name: Minimax M2.5 (OpenRouter)
-    model_id: minimax_m2_5
+  - name: Minimax M2.7 (OpenRouter)
+    model_id: minimax_m2_7
     provider: OpenRouter
     release_date: 2025-01-01
-    input_price: 0.0
-    output_price: 0.0
-    api_model_id: minimax/minimax-m2.5:free
+    input_price: 0.3
+    output_price: 1.2
+    api_model_id: minimax/minimax-m2.7
     base_url: https://openrouter.ai/api/v1
     api_key_env: OPENROUTER_API_KEY
