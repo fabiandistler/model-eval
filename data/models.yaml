@@ -10,3 +10,23 @@ models:
     api_model_id: minimax/minimax-m2.7
     base_url: https://openrouter.ai/api/v1
     api_key_env: OPENROUTER_API_KEY
+
+  - name: KAT-Coder-Pro V2 (OpenRouter)
+    model_id: katcoderpro_v2
+    provider: OpenRouter
+    release_date: 2026-03-27
+    input_price: 0.3
+    output_price: 1.2
+    api_model_id: kwaipilot/kat-coder-pro-v2
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY
+
+  - name: Kimi K2.6 (OpenRouter)
+    model_id: kimi_k2_6
+    provider: OpenRouter
+    release_date: 2026-04-20
+    input_price: 0.74
+    output_price: 3.49
+    api_model_id: moonshotai/kimi-k2.6
+    base_url: https://openrouter.ai/api/v1
+    api_key_env: OPENROUTER_API_KEY

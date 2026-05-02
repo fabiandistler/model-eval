@@ -20,7 +20,7 @@ source(here::here("R/eval_functions.R"))
 YAML_PATH <- here::here("data/models.yaml")
 RESULTS_DIR <- here::here("results_rds")
 LOG_DIR <- here::here("logs")
-SCORER_MODEL <- "minimax/minimax-m2.7"
+SCORER_MODEL <- "anthropic/claude-sonnet-latest"
 
 # ---------------------------------------------------------------------------
 # CLI argument parsing
@@ -45,7 +45,7 @@ if (!dir.exists(LOG_DIR)) {
 }
 log_file <- file.path(LOG_DIR, format(Sys.time(), "eval_%Y%m%d_%H%M%S.log"))
 con <- file(log_file, open = "wt")
-sink(con, split = TRUE)  # split = TRUE writes to both file and console
+sink(con, split = TRUE) # split = TRUE writes to both file and console
 message(glue("Log file: {log_file}\n"))
 
 # Set up vitals logging
