@@ -52,3 +52,4 @@ renv/staging/
 renv/local/
 .memsearch
 .opencode
+.claude
