@@ -118,7 +118,9 @@ plot_cost_vs_performance <- function(summary_data) {
       color = case_when(
         provider == "Anthropic" ~ "#be8bd4ff",
         provider == "OpenAI" ~ "#80c8d3ff",
-        provider == "Google" ~ "#f6e8c3"
+        provider == "Google" ~ "#f6e8c3",
+        provider == "MiniMax" ~ "#a8d5e2",
+        TRUE ~ "#888888"
       )
     )
 
@@ -153,8 +155,10 @@ plot_cost_vs_performance <- function(summary_data) {
       values = c(
         "Anthropic" = "#be8bd4ff",
         "OpenAI" = "#80c8d3ff",
-        "Google" = "#f6e8c3"
-      )
+        "Google" = "#f6e8c3",
+        "MiniMax" = "#a8d5e2"
+      ),
+      na.value = "#888888"
     ) +
     labs(
       x = "Total Cost (USD)",

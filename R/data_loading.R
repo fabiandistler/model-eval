@@ -86,7 +86,7 @@ compute_cost_data <- function(tasks, model_prices) {
     imap(\(x, idx) x$get_cost() |> mutate(model_join = idx)) |>
     list_rbind() |>
     filter(source != "scorer") |>
-    mutate(price = stringr::str_extract(price, "\\d+\\.\\d+") |> as.double()) |>
+    mutate(price = stringr::str_extract(price, "\\d*\\.\\d+") |> as.double()) |>
     left_join(model_prices, by = "model_join") |>
     mutate(
       price = if_else(

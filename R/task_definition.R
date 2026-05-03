@@ -27,14 +27,13 @@ create_are_task <- function(scorer_chat) {
 
 #' Evaluate a model on the ARE dataset
 #'
-#' @param model API model identifier (e.g., "anthropic/claude-sonnet-4-20250514")
+#' @param model OpenRouter model slug (e.g., "anthropic/claude-sonnet-4.6")
 #' @param filename Output filename (without .rds extension). Defaults to model name.
 #' @param scorer_chat Chat object used for model-graded scoring
 #' @param overwrite Whether to overwrite existing results. Defaults to TRUE.
-#' @param ... Additional arguments passed to chat():
-#'   - base_url: Custom API endpoint
-#'   - api_key: Custom API key
-#'   - api_args: List of additional API arguments (e.g., thinking config)
+#' @param api_args List forwarded to chat_openrouter(api_args = ...).
+#'   Should include `usage = list(include = TRUE)` to get authoritative
+#'   per-request cost from OpenRouter.
 #'
 #' @return Invisible NULL. Results saved to results_rds/{filename}.rds
 model_eval <- function(
@@ -42,7 +41,7 @@ model_eval <- function(
   filename = model,
   scorer_chat,
   overwrite = TRUE,
-  ...
+  api_args = list(usage = list(include = TRUE))
 ) {
   model_path <- fs::path(results_dir, filename, ext = "rds")
 
@@ -51,10 +50,10 @@ model_eval <- function(
     return(invisible(NULL))
   }
 
-  chat <- chat(name = model, ...)
+  solver_chat <- chat_openrouter(model = model, api_args = api_args)
 
   are_task <- create_are_task(scorer_chat)
-  are_task$eval(solver_chat = chat)
+  are_task$eval(solver_chat = solver_chat)
 
   readr::write_rds(are_task, file = model_path)
 }

@@ -1,10 +1,99 @@
+# All models route via OpenRouter (https://openrouter.ai).
+# Required env var: OPENROUTER_API_KEY
+#
+# Fields:
+#   name              Display name in the Shiny app
+#   model_id          Internal join key + filename for results_rds/<id>.rds
+#   provider          Informational, used for plot colors
+#   release_date      For sorting / display
+#   api_model_id      OpenRouter model slug (see https://openrouter.ai/models)
+#   input_price       USD per 1M input tokens - fallback only; the eval
+#   output_price      USD per 1M output tokens - pulls live cost from OpenRouter
+#                     via usage:{include:true} when available.
+#   reasoning_effort  Optional: "low" | "medium" | "high" for reasoning models
+#
+# Pricing below is approximate as of May 2026. Verify via
+#   curl https://openrouter.ai/api/v1/models | jq '.data[] | select(.id=="...") | .pricing'
+# before relying on it for budgeting.
 models:
-  - name: MiniMax Free
-    model_id: minimax_free
-    provider: OpenRouter
-    release_date: 2025-05-02
-    input_price: 0
-    output_price: 0
-    api_model_id: minimax/minimax-m2.5:free
-    base_url: https://openrouter.ai/api/v1
-    api_key_env: OPENROUTER_API_KEY
+  - name: MiniMax 2.5
+    model_id: minimax_2_5
+    provider: MiniMax
+    release_date: 2026-02-12
+    api_model_id: minimax/minimax-m2.5
+    input_price: 0.15
+    output_price: 1.15
+
+  - name: Claude Sonnet 4.6
+    model_id: claude_sonnet_4_6
+    provider: Anthropic
+    release_date: 2025-12-01
+    api_model_id: anthropic/claude-sonnet-4.6
+    input_price: 3
+    output_price: 15
+
+  - name: MiniMax 2.7
+    model_id: minimax_2_7
+    provider: MiniMax
+    release_date: 2026-03-18
+    api_model_id: minimax/minimax-m2.7
+    input_price: 0.30
+    output_price: 1.20
+
+  - name: KAT-Coder Pro v2
+    model_id: kat_coder_pro_v2
+    provider: Kwaipilot
+    release_date: 2026-03-27
+    api_model_id: kwaipilot/kat-coder-pro-v2
+    input_price: 0.30
+    output_price: 1.20
+
+
+  - name: GLM-5
+    model_id: glm_5
+    provider: Zhipu AI
+    release_date: 2026-02-11
+    api_model_id: z-ai/glm-5
+    input_price: 0.60
+    output_price: 2.08
+
+  - name: Gemini 3.1 Pro Preview
+    model_id: gemini_3_1_pro_preview
+    provider: Google
+    release_date: 2026-02-19
+    api_model_id: google/gemini-3.1-pro-preview
+    input_price: 2.00
+    output_price: 12.00
+
+  - name: Qwen 3.6 Plus
+    model_id: qwen_3_6_plus
+    provider: Qwen
+    release_date: 2026-04-02
+    api_model_id: qwen/qwen3.6-plus
+    input_price: 0.325
+    output_price: 1.95
+
+  - name: MiMo v2.5 Pro
+    model_id: mimo_v2_5_pro
+    provider: Xiaomi
+    release_date: 2026-04-22
+    api_model_id: xiaomi/mimo-v2.5-pro
+    input_price: 1.00
+    output_price: 3.00
+
+  - name: DeepSeek v4 Pro
+    model_id: deepseek_v4_pro
+    provider: DeepSeek
+    release_date: 2026-04-24
+    api_model_id: deepseek/deepseek-v4-pro
+    input_price: 0.435
+    output_price: 0.87
+    reasoning_effort: high
+
+  - name: Grok 4.3
+    model_id: grok_4_3
+    provider: xAI
+    release_date: 2026-04-30
+    api_model_id: x-ai/grok-4.3
+    input_price: 1.25
+    output_price: 2.50

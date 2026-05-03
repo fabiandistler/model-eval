@@ -16,7 +16,11 @@ source(here::here("R/eval_functions.R"))
 YAML_PATH <- here::here("data/models.yaml")
 RESULTS_DIR <- here::here("results_rds")
 LOG_DIR <- here::here("logs")
-SCORER_MODEL <- "minimax/minimax-m2.5:free"
+SCORER_MODEL <- "anthropic/claude-sonnet-4.6"
+
+if (Sys.getenv("OPENROUTER_API_KEY") == "") {
+  stop("OPENROUTER_API_KEY not set — see https://openrouter.ai/keys")
+}
 
 # Set up logging
 vitals::vitals_log_dir_set(LOG_DIR)
@@ -35,7 +39,10 @@ unevaluated <- find_unevaluated_models(model_configs, RESULTS_DIR)
 if (length(unevaluated) > 0) {
   message(glue("Running {length(unevaluated)} unevaluated model(s)..."))
 
-  scorer_chat <- chat_openrouter(model = SCORER_MODEL)
+  scorer_chat <- chat_openrouter(
+    model = SCORER_MODEL,
+    api_args = list(usage = list(include = TRUE))
+  )
 
   eval_results <- run_all_evals(
     model_configs = model_configs,
