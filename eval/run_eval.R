@@ -16,7 +16,7 @@ source(here::here("R/eval_functions.R"))
 YAML_PATH <- here::here("data/models.yaml")
 RESULTS_DIR <- here::here("results_rds")
 LOG_DIR <- here::here("logs")
-SCORER_MODEL <- "minimax/minimax-m2.5:free"
+SCORER_MODEL <- "anthropic/claude-sonnet-4.6"
 
 if (Sys.getenv("OPENROUTER_API_KEY") == "") {
   stop("OPENROUTER_API_KEY not set — see https://openrouter.ai/keys")

@@ -16,21 +16,21 @@
 #   curl https://openrouter.ai/api/v1/models | jq '.data[] | select(.id=="...") | .pricing'
 # before relying on it for budgeting.
 models:
-  - name: MiniMax Free
-    model_id: minimax_free
+  - name: MiniMax 2.5
+    model_id: minimax_2_5
     provider: MiniMax
-    release_date: 2025-05-02
-    api_model_id: minimax/minimax-m2.5:free
-    input_price: 0
-    output_price: 0
+    release_date: 2026-02-12
+    api_model_id: minimax/minimax-m2.5
+    input_price: 0.15
+    output_price: 1.15
 
-  - name: Claude Opus 4.7
-    model_id: claude_opus_4_7
-    provider: Anthropic
-    release_date: 2026-01-15
-    api_model_id: anthropic/claude-opus-4.7
-    input_price: 15
-    output_price: 75
+  # - name: Claude Opus 4.7
+  #   model_id: claude_opus_4_7
+  #   provider: Anthropic
+  #   release_date: 2026-01-15
+  #   api_model_id: anthropic/claude-opus-4.7
+  #   input_price: 15
+  #   output_price: 75
 
   - name: Claude Sonnet 4.6
     model_id: claude_sonnet_4_6
@@ -40,42 +40,41 @@ models:
     input_price: 3
     output_price: 15
 
-  - name: Claude Haiku 4.5
-    model_id: claude_haiku_4_5
-    provider: Anthropic
-    release_date: 2025-10-01
-    api_model_id: anthropic/claude-haiku-4.5
-    input_price: 1
-    output_price: 5
+  # - name: Claude Haiku 4.5
+  #   model_id: claude_haiku_4_5
+  #   provider: Anthropic
+  #   release_date: 2025-10-01
+  #   api_model_id: anthropic/claude-haiku-4.5
+  #   input_price: 1
+  #   output_price: 5
 
-  - name: GPT-5
-    model_id: gpt_5
-    provider: OpenAI
-    release_date: 2025-08-01
-    api_model_id: openai/gpt-5
-    input_price: 5
-    output_price: 20
+  # - name: GPT-5
+  #   model_id: gpt_5
+  #   provider: OpenAI
+  #   release_date: 2025-08-01
+  #   api_model_id: openai/gpt-5
+  #   input_price: 5
+  #   output_price: 20
 
-  - name: GPT-5 Mini
-    model_id: gpt_5_mini
-    provider: OpenAI
-    release_date: 2025-08-01
-    api_model_id: openai/gpt-5-mini
-    input_price: 0.5
-    output_price: 2
+  # - name: GPT-5 Mini
+  #   model_id: gpt_5_mini
+  #   provider: OpenAI
+  #   release_date: 2025-08-01
+  #   api_model_id: openai/gpt-5-mini
+  #   input_price: 0.5
+  #   output_price: 2
+  # - name: Gemini 2.5 Pro
+  #   model_id: gemini_2_5_pro
+  #   provider: Google
+  #   release_date: 2025-06-01
+  #   api_model_id: google/gemini-2.5-pro
+  #   input_price: 2.5
+  #   output_price: 10
 
-  - name: Gemini 2.5 Pro
-    model_id: gemini_2_5_pro
-    provider: Google
-    release_date: 2025-06-01
-    api_model_id: google/gemini-2.5-pro
-    input_price: 2.5
-    output_price: 10
-
-  - name: Gemini 2.5 Flash
-    model_id: gemini_2_5_flash
-    provider: Google
-    release_date: 2025-06-01
-    api_model_id: google/gemini-2.5-flash
-    input_price: 0.3
-    output_price: 1.2
+  # - name: Gemini 2.5 Flash
+  #   model_id: gemini_2_5_flash
+  #   provider: Google
+  #   release_date: 2025-06-01
+  #   api_model_id: google/gemini-2.5-flash
+  #   input_price: 0.3
+  #   output_price: 1.2
